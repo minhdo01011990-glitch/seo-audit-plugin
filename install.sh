@@ -5,20 +5,33 @@ set -euo pipefail
 
 BOLD="\033[1m"; GREEN="\033[32m"; RED="\033[31m"; RESET="\033[0m"
 
-# Kiểm tra Python 3.11+
-if ! command -v python3 &>/dev/null; then
-    echo -e "${RED}❌ Python 3 không tìm thấy. Cài đặt tại https://python.org/downloads/${RESET}"
+# Tìm Python 3.11+ — thử theo thứ tự ưu tiên để tránh bị dùng system Python cũ
+PYTHON=""
+for candidate in python3.13 python3.12 python3.11 python3; do
+    if command -v "$candidate" &>/dev/null; then
+        _major=$("$candidate" -c "import sys; print(sys.version_info.major)" 2>/dev/null || echo 0)
+        _minor=$("$candidate" -c "import sys; print(sys.version_info.minor)" 2>/dev/null || echo 0)
+        if [[ "$_major" -eq 3 && "$_minor" -ge 11 ]]; then
+            PYTHON="$candidate"
+            break
+        fi
+    fi
+done
+
+if [[ -z "$PYTHON" ]]; then
+    echo -e "${RED}❌ Không tìm thấy Python 3.11+. Cài đặt tại https://python.org/downloads/${RESET}"
+    echo "   (python3 --version hiện tại: $(python3 --version 2>/dev/null || echo 'không tìm thấy'))"
     exit 1
 fi
-PY_MAJOR=$(python3 -c "import sys; print(sys.version_info.major)")
-PY_MINOR=$(python3 -c "import sys; print(sys.version_info.minor)")
-if [[ "$PY_MAJOR" -lt 3 ]] || [[ "$PY_MAJOR" -eq 3 && "$PY_MINOR" -lt 11 ]]; then
-    echo -e "${RED}❌ Cần Python 3.11+, hiện có Python $PY_MAJOR.$PY_MINOR${RESET}"
-    exit 1
-fi
+echo -e "${BOLD}Python:${RESET} $("$PYTHON" --version)"
+
+# Tìm pip tương ứng với Python vừa chọn
+PIP="$PYTHON -m pip"
 
 echo -e "${BOLD}Cài đặt seo-audit-mcp từ PyPI...${RESET}"
-pip3 install --quiet --upgrade seo-audit-mcp
+$PIP install --quiet --upgrade seo-audit-mcp
 
 echo -e "${BOLD}Chạy installer...${RESET}"
-seo-audit-mcp-install
+"$($PYTHON -c "import sysconfig; print(sysconfig.get_path('scripts'))")/seo-audit-mcp-install" 2>/dev/null \
+    || "$($PYTHON -m site --user-base 2>/dev/null)/bin/seo-audit-mcp-install" 2>/dev/null \
+    || seo-audit-mcp-install
