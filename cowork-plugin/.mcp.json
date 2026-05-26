@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "seo-audit": {
+      "command": "seo-audit-mcp",
+      "env": {
+        "PAGESPEED_API_KEY": "${PAGESPEED_API_KEY}"
+      }
+    }
+  }
+}
