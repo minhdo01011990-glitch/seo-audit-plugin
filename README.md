@@ -3,23 +3,21 @@
 Phân tích website theo **105+ tiêu chí Technical SEO + UI** thông qua 4 agent tuần tự.  
 Chạy trên **Claude Desktop App** (Cowork) — hỗ trợ lệnh `/onpage`.
 
-## Cài Đặt Nhanh (1 lệnh)
+## Cài Đặt (1 lệnh, hoàn toàn tự động)
 
 ```bash
 bash <(curl -sSL https://github.com/minhdo01011990-glitch/seo-audit-plugin/raw/main/install.sh)
 ```
 
-Script tự động:
+Script tự động 100%:
 1. Cài `seo-audit-mcp` từ PyPI
 2. Cấu hình MCP server vào `claude_desktop_config.json`
-3. Tải file `seo-audit.plugin` về Desktop
+3. Cài plugin trực tiếp vào Claude Desktop (không cần upload thủ công)
+4. Restart Claude Desktop
 
-Sau đó **upload plugin vào Claude Desktop** (30 giây — phải làm thủ công vì giới hạn UI):
-- Claude Desktop → Cowork → Settings → Plugins → **Upload Plugin**
-- Chọn `~/Desktop/seo-audit.plugin`
-- **Restart** Claude Desktop
+Sau khi script chạy xong, mở Cowork và gõ `/onpage` là dùng được ngay.
 
-## Cài Đặt Thủ Công (nếu cần)
+## Cài Đặt Thủ Công (nếu script báo lỗi)
 
 ```bash
 # 1. Cài Python package
@@ -38,7 +36,7 @@ pip install seo-audit-mcp
   }
 }
 
-# 3. Tải plugin từ GitHub Releases và upload vào Cowork
+# 3. Tải seo-audit.plugin từ GitHub Releases → upload vào Cowork → Restart
 ```
 
 ## Sử Dụng
