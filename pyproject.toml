@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "seo-audit-mcp"
-version = "1.0.0"
+version = "1.1.0"
 description = "MCP server for SEO auditing — 105+ criteria Technical + UI analysis for Claude Desktop"
 readme = "README.md"
 license = "MIT"
