@@ -32,7 +32,8 @@ dependencies = [
 ]
 
 [project.scripts]
-seo-audit-mcp = "mcp_server.server:cli"
+seo-audit-mcp         = "mcp_server.server:cli"
+seo-audit-mcp-install = "mcp_server.install:main"
 
 [project.urls]
 Homepage = "https://github.com/minhdo01011990-glitch/seo-audit-plugin"
@@ -44,4 +45,9 @@ where = ["."]
 include = ["mcp_server*"]
 
 [tool.setuptools.package-data]
-"mcp_server" = ["templates/*.md"]
+"mcp_server" = [
+    "templates/*.md",
+    "plugin_data/mcp.json",
+    "plugin_data/claude_plugin/plugin.json",
+    "plugin_data/skills/onpage/SKILL.md",
+]

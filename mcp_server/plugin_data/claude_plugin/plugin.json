@@ -1,0 +1,11 @@
+{
+  "name": "seo-audit",
+  "version": "1.0.0",
+  "description": "Phân tích SEO website theo 105+ tiêu chí Technical + UI thông qua 4 agent tuần tự: thu thập input → crawl dữ liệu → phân tích checklist → xuất báo cáo Markdown.",
+  "author": {
+    "name": "Minh",
+    "email": "minhdo01011990@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": ["seo", "audit", "technical-seo", "crawl", "pagespeed"]
+}
