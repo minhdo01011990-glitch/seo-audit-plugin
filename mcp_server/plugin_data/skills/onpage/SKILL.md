@@ -53,6 +53,12 @@ PageSpeed API Key     :
 Nhóm tiêu chí ưu tiên : [ ] Tất cả  
                          Hoặc chọn: I  II  III  IV  V  VI  VII  VIII  IX  X  XI  XII  XIII  XIV
 Kèm đề xuất xử lý    : [ ] Có  [ ] Không
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ OUTPUT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Thư mục lưu báo cáo  : (để trống = ~/Documents/SEO Audit Reports)
+Định dạng output     : [ ] Markdown (.md)  [ ] Excel (.xlsx)  [ ] Word (.docx)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -65,7 +71,9 @@ Sau khi user gửi bảng đã điền, đọc và parse toàn bộ giá trị, 
 seo_collect_input({
   domain, brand_info, audit_purpose, language,
   pagespeed_api_key, priority_groups, include_recommendations,
-  data_sources: { screaming_frog, gsc_coverage, gsc_performance, ahrefs }
+  data_sources: { screaming_frog, gsc_coverage, gsc_performance, ahrefs },
+  output_dir,      // thư mục lưu báo cáo (chuỗi path, hoặc "" nếu để trống)
+  output_format,   // "md" | "xlsx" | "docx"
 })
 ```
 
@@ -151,7 +159,7 @@ Tóm tắt cho người dùng: số trang đã crawl, data sources đã có, dat
 
 ## AGENT 4 — Xuất Báo Cáo
 
-1. Gọi `seo_save_report(audit_results)` để render Jinja2 template và lưu file.
+1. Gọi `seo_save_report(audit_results, output_format, output_dir)` — truyền `output_format` và `output_dir` từ config đã lưu ở Agent 1.
 
 2. Thông báo cho người dùng:
    > "✅ Báo cáo SEO audit đã được tạo tại: `{file_path}`"
