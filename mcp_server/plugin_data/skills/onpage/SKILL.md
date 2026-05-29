@@ -59,6 +59,11 @@ Kèm đề xuất xử lý    : [ ] Có  [ ] Không
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Thư mục lưu báo cáo  : (để trống = ~/Documents/SEO Audit Reports)
 Định dạng output     : [ ] Markdown (.md)  [ ] Excel (.xlsx)  [ ] Word (.docx)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ LƯU Ý / YÊU CẦU ĐẶC BIỆT  (tùy chọn)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Lưu ý                :
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -74,8 +79,16 @@ seo_collect_input({
   data_sources: { screaming_frog, gsc_coverage, gsc_performance, ahrefs },
   output_dir,      // thư mục lưu báo cáo (chuỗi path, hoặc "" nếu để trống)
   output_format,   // "md" | "xlsx" | "docx"
+  notes,           // nội dung ô "Lưu ý / Yêu cầu đặc biệt" (hoặc "" nếu để trống)
 })
 ```
+
+Nếu trường **Lưu ý** không trống, đọc kỹ và điều chỉnh các bước tiếp theo cho phù hợp. Ví dụ:
+- "chỉ audit kỹ phần mobile" → ưu tiên checklist UI responsive, ghi chú trong báo cáo
+- "website bán hàng thời trang" → chú ý hơn vào Product schema, hình ảnh, giá
+- "chỉ cần kiểm tra technical, bỏ qua UI" → bỏ qua toàn bộ UI checklist
+- "báo cáo ngắn gọn, không cần chi tiết từng tiêu chí" → chỉ xuất tóm tắt + top issues
+- Bất kỳ yêu cầu nào khác: áp dụng theo đúng nghĩa của lưu ý đó
 
 Thông báo: "✅ Đã lưu cấu hình. Bắt đầu thu thập dữ liệu..."
 

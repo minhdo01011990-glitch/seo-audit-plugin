@@ -80,6 +80,11 @@ async def list_tools() -> list[Tool]:
                         "description": "Định dạng file xuất: md | xlsx | docx",
                         "default": "md",
                     },
+                    "notes": {
+                        "type": "string",
+                        "description": "Lưu ý / yêu cầu đặc biệt từ người dùng (để trống nếu không có)",
+                        "default": "",
+                    },
                 },
                 "required": ["domain"],
             },
@@ -341,6 +346,7 @@ def _handle_collect_input(args: dict) -> dict:
         "data_sources": args.get("data_sources", {}),
         "output_dir": args.get("output_dir", "").strip() or default_output_dir,
         "output_format": args.get("output_format", "md").strip().lower() or "md",
+        "notes": args.get("notes", "").strip(),
         "created_at": datetime.now().isoformat(),
     }
     return {
