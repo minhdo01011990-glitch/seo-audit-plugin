@@ -334,7 +334,7 @@ async def _dispatch(name: str, args: dict) -> dict:
 
 def _handle_collect_input(args: dict) -> dict:
     global _audit_config
-    default_output_dir = str(Path.home() / "Documents" / "SEO Audit Reports")
+    default_output_dir = str(Path.home() / "Claude" / "SEO Reports")
     _audit_config = {
         "domain": args.get("domain", ""),
         "brand_info": args.get("brand_info", ""),
@@ -366,7 +366,7 @@ def _handle_save_report(args: dict) -> dict:
     fmt_map = {"excel": "xlsx", "word": "docx", "docs": "docx", "md": "md", "xlsx": "xlsx", "docx": "docx"}
     fmt = fmt_map.get(fmt_raw, "md")
 
-    default_dir = str(Path.home() / "Documents" / "SEO Audit Reports")
+    default_dir = str(Path.home() / "Claude" / "SEO Reports")
     output_dir = Path(
         args.get("output_dir", "").strip()
         or _audit_config.get("output_dir", "")

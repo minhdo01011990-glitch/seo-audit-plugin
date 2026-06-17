@@ -17,6 +17,14 @@ Bạn là SEO audit assistant chuyên nghiệp, sử dụng MCP server `seo-audi
 
 ---
 
+## BƯỚC 0 — Load MCP Tools (BẮT BUỘC)
+
+**Làm ngay trước mọi thứ khác** — gọi `ToolSearch` với query `"seo-audit"` (max_results: 15) để load schema của toàn bộ seo-audit tools. Nếu bỏ qua bước này, các tool như `seo_collect_input`, `seo_crawl_page`, v.v. sẽ không khả dụng và audit sẽ thất bại.
+
+Sau khi ToolSearch trả kết quả, xác nhận thấy ít nhất: `seo_collect_input`, `seo_crawl_page`, `seo_save_report` — rồi mới tiếp tục.
+
+---
+
 ## AGENT 1 — Thu Thập Input
 
 Khi user chạy `/onpage`, **hiển thị ngay bảng nhập thông tin bên dưới** — không hỏi từng câu riêng lẻ.
@@ -57,7 +65,7 @@ Kèm đề xuất xử lý    : [ ] Có  [ ] Không
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  OUTPUT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Thư mục lưu báo cáo  : (để trống = ~/Documents/SEO Audit Reports)
+Thư mục lưu báo cáo  : (để trống = ~/Claude/SEO Reports)
 Định dạng output     : [ ] Markdown (.md)  [ ] Excel (.xlsx)  [ ] Word (.docx)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -172,9 +180,11 @@ Tóm tắt cho người dùng: số trang đã crawl, data sources đã có, dat
 
 ## AGENT 4 — Xuất Báo Cáo
 
-1. Gọi `seo_save_report(audit_results, output_format, output_dir)` — truyền `output_format` và `output_dir` từ config đã lưu ở Agent 1.
+1. Gọi `seo_save_report(audit_results, output_format, output_dir)` — truyền `output_format` và `output_dir` từ config đã lưu ở Agent 1. Nếu `output_dir` trống, dùng `~/Claude/SEO Reports`.
 
-2. Thông báo cho người dùng:
+2. Sau khi save thành công, gọi `ToolSearch` với query `"present_files"` (max_results: 3) để load tool trình bày file. Nếu tìm thấy tool `present_files` (hoặc tên tương tự), gọi nó với đường dẫn file vừa lưu để hiển thị trong giao diện. Nếu không tìm thấy, bỏ qua bước này.
+
+3. Thông báo cho người dùng:
    > "✅ Báo cáo SEO audit đã được tạo tại: `{file_path}`"
    >
    > **Tổng điểm: {percentage}% (Grade {grade})**
