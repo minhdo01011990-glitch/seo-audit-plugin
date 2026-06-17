@@ -383,7 +383,10 @@ def _handle_save_report(args: dict) -> dict:
     output_dir = Path(raw_dir).expanduser()
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    domain = _audit_config.get("domain", "unknown").replace("https://", "").replace("http://", "").replace("/", "_")
+    domain = (
+        audit_results.get("domain")
+        or _audit_config.get("domain", "unknown")
+    ).replace("https://", "").replace("http://", "").replace("/", "_")
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"seo_report_{domain}_{timestamp}.{fmt}"
     output_path = output_dir / filename
@@ -449,7 +452,7 @@ def _save_as_excel(audit_results: dict, output_path: Path) -> None:
     top_issues = audit_results.get("top_issues", [])
     categories = audit_results.get("categories", {})
     generated_at = datetime.now().strftime("%d/%m/%Y %H:%M")
-    domain = _audit_config.get("domain", "N/A")
+    domain = audit_results.get("domain") or _audit_config.get("domain", "N/A")
 
     wb = Workbook()
 
@@ -477,12 +480,12 @@ def _save_as_excel(audit_results: dict, output_path: Path) -> None:
         status = issue.get("status", "")
         ws2.append([
             i,
-            issue.get("category", ""),
-            issue.get("name", ""),
-            issue.get("priority", ""),
+            issue.get("category") or issue.get("group") or issue.get("section", ""),
+            issue.get("name") or issue.get("issue") or issue.get("title", ""),
+            issue.get("priority") or issue.get("severity", ""),
             status,
-            issue.get("evidence", ""),
-            issue.get("recommendation", ""),
+            issue.get("evidence") or issue.get("detail") or issue.get("description", ""),
+            issue.get("recommendation") or issue.get("fix") or issue.get("solution", ""),
         ])
         color = STATUS_FILL.get(status)
         if color:
@@ -494,6 +497,9 @@ def _save_as_excel(audit_results: dict, output_path: Path) -> None:
     _hdr(ws3, ["Nhóm", "ID", "Tiêu chí", "Mức độ", "Phương pháp", "Trạng thái", "Ghi nhận", "Đề xuất"])
     row_num = 2
     for cat_name, items in categories.items():
+        # items may be a list directly, or a dict with an "items" key
+        if isinstance(items, dict):
+            items = items.get("items") or items.get("results") or []
         if not isinstance(items, list):
             continue
         for item in items:
@@ -501,12 +507,12 @@ def _save_as_excel(audit_results: dict, output_path: Path) -> None:
             ws3.append([
                 cat_name,
                 item.get("id", ""),
-                item.get("name", ""),
-                item.get("priority", ""),
-                item.get("check_method", ""),
+                item.get("name") or item.get("title") or item.get("issue", ""),
+                item.get("priority") or item.get("severity", ""),
+                item.get("check_method") or item.get("method", ""),
                 status,
-                item.get("evidence", ""),
-                item.get("recommendation", ""),
+                item.get("evidence") or item.get("detail") or item.get("description", ""),
+                item.get("recommendation") or item.get("fix") or item.get("solution", ""),
             ])
             color = STATUS_FILL.get(status)
             if color:
@@ -528,7 +534,7 @@ def _save_as_docx(audit_results: dict, output_path: Path) -> None:
     score = audit_results.get("score", {})
     top_issues = audit_results.get("top_issues", [])
     categories = audit_results.get("categories", {})
-    domain = _audit_config.get("domain", "N/A")
+    domain = audit_results.get("domain") or _audit_config.get("domain", "N/A")
     generated_at = datetime.now().strftime("%d/%m/%Y %H:%M")
 
     doc = Document()
@@ -563,30 +569,36 @@ def _save_as_docx(audit_results: dict, output_path: Path) -> None:
         for i, issue in enumerate(top_issues[:10], 1):
             cells = table.add_row().cells
             cells[0].text = str(i)
-            cells[1].text = issue.get("name", "")
-            cells[2].text = issue.get("priority", "")
+            cells[1].text = issue.get("name") or issue.get("issue") or issue.get("title", "")
+            cells[2].text = issue.get("priority") or issue.get("severity", "")
             icon = STATUS_ICONS.get(issue.get("status", ""), "")
             cells[3].text = f"{icon} {issue.get('status', '')}"
-            cells[4].text = issue.get("evidence", "")
+            cells[4].text = issue.get("evidence") or issue.get("detail") or issue.get("description", "")
 
     doc.add_heading("Chi Tiết Theo Nhóm", 1)
     for cat_name, items in categories.items():
         doc.add_heading(cat_name, 2)
+        if isinstance(items, dict):
+            items = items.get("items") or items.get("results") or []
         if isinstance(items, list):
             for item in items:
                 icon = STATUS_ICONS.get(item.get("status", ""), "❓")
+                name = item.get("name") or item.get("title") or item.get("issue", "")
+                priority = item.get("priority") or item.get("severity", "")
                 p = doc.add_paragraph(style="List Bullet")
-                p.add_run(f"{icon} {item.get('name', '')} [{item.get('priority', '')}]").bold = True
-                if item.get("evidence"):
-                    doc.add_paragraph(f"Ghi nhận: {item['evidence']}", style="List Bullet 2")
-                if item.get("recommendation"):
-                    doc.add_paragraph(f"Đề xuất: {item['recommendation']}", style="List Bullet 2")
+                p.add_run(f"{icon} {name} [{priority}]").bold = True
+                evidence = item.get("evidence") or item.get("detail") or item.get("description", "")
+                recommendation = item.get("recommendation") or item.get("fix") or item.get("solution", "")
+                if evidence:
+                    doc.add_paragraph(f"Ghi nhận: {evidence}", style="List Bullet 2")
+                if recommendation:
+                    doc.add_paragraph(f"Đề xuất: {recommendation}", style="List Bullet 2")
 
     doc.save(output_path)
 
 
 def _build_fallback_report(results: dict, template_error: str = "") -> str:
-    domain = _audit_config.get("domain", "N/A")
+    domain = results.get("domain") or _audit_config.get("domain", "N/A")
     brand = _audit_config.get("brand_info", "")
     generated_at = datetime.now().strftime("%d/%m/%Y %H:%M")
     score = results.get("score", {})
@@ -613,11 +625,15 @@ def _build_fallback_report(results: dict, template_error: str = "") -> str:
 
     if top_issues:
         for i, issue in enumerate(top_issues[:10], 1):
-            lines.append(f"{i}. **[{issue.get('priority', '').upper()}]** {issue.get('name', '')} — {issue.get('status', '')}")
-            if issue.get("evidence"):
-                lines.append(f"   - Ghi nhận: {issue['evidence']}")
-            if issue.get("recommendation"):
-                lines.append(f"   - Đề xuất: {issue['recommendation']}")
+            name = issue.get("name") or issue.get("issue") or issue.get("title", "")
+            priority = issue.get("priority") or issue.get("severity", "")
+            evidence = issue.get("evidence") or issue.get("detail") or issue.get("description", "")
+            recommendation = issue.get("recommendation") or issue.get("fix") or issue.get("solution", "")
+            lines.append(f"{i}. **[{priority.upper()}]** {name} — {issue.get('status', '')}")
+            if evidence:
+                lines.append(f"   - Ghi nhận: {evidence}")
+            if recommendation:
+                lines.append(f"   - Đề xuất: {recommendation}")
     else:
         lines.append("_(Không có dữ liệu)_")
 
@@ -626,14 +642,20 @@ def _build_fallback_report(results: dict, template_error: str = "") -> str:
     for cat_name, items in categories.items():
         lines.append(f"### {cat_name}")
         lines.append("")
+        if isinstance(items, dict):
+            items = items.get("items") or items.get("results") or []
         if isinstance(items, list):
             for item in items:
                 status_icon = {"passed": "✅", "failed": "❌", "warning": "⚠️", "manual": "🔍"}.get(item.get("status", ""), "❓")
-                lines.append(f"- {status_icon} **{item.get('name', '')}** ({item.get('priority', '')})")
-                if item.get("evidence"):
-                    lines.append(f"  > {item['evidence']}")
-                if item.get("recommendation"):
-                    lines.append(f"  > **Đề xuất:** {item['recommendation']}")
+                name = item.get("name") or item.get("title") or item.get("issue", "")
+                priority = item.get("priority") or item.get("severity", "")
+                evidence = item.get("evidence") or item.get("detail") or item.get("description", "")
+                recommendation = item.get("recommendation") or item.get("fix") or item.get("solution", "")
+                lines.append(f"- {status_icon} **{name}** ({priority})")
+                if evidence:
+                    lines.append(f"  > {evidence}")
+                if recommendation:
+                    lines.append(f"  > **Đề xuất:** {recommendation}")
         lines.append("")
 
     if template_error:
