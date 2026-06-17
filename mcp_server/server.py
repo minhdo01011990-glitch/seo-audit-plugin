@@ -335,6 +335,8 @@ async def _dispatch(name: str, args: dict) -> dict:
 def _handle_collect_input(args: dict) -> dict:
     global _audit_config
     default_output_dir = str(Path.home() / "Claude" / "SEO Reports")
+    raw_dir = args.get("output_dir", "").strip()
+    resolved_dir = str(Path(raw_dir).expanduser()) if raw_dir else default_output_dir
     _audit_config = {
         "domain": args.get("domain", ""),
         "brand_info": args.get("brand_info", ""),
@@ -344,7 +346,7 @@ def _handle_collect_input(args: dict) -> dict:
         "priority_groups": args.get("priority_groups", []),
         "include_recommendations": args.get("include_recommendations", True),
         "data_sources": args.get("data_sources", {}),
-        "output_dir": args.get("output_dir", "").strip() or default_output_dir,
+        "output_dir": resolved_dir,
         "output_format": args.get("output_format", "md").strip().lower() or "md",
         "notes": args.get("notes", "").strip(),
         "created_at": datetime.now().isoformat(),
@@ -358,20 +360,27 @@ def _handle_collect_input(args: dict) -> dict:
 
 def _handle_save_report(args: dict) -> dict:
     audit_results = args.get("audit_results", {})
+    if isinstance(audit_results, str):
+        try:
+            audit_results = json.loads(audit_results)
+        except Exception:
+            audit_results = {}
 
     fmt_raw = (
         args.get("output_format", "").strip().lower()
         or _audit_config.get("output_format", "md")
     )
-    fmt_map = {"excel": "xlsx", "word": "docx", "docs": "docx", "md": "md", "xlsx": "xlsx", "docx": "docx"}
+    fmt_map = {"excel": "xlsx", "word": "docx", "docs": "docx", "md": "md", "xlsx": "xlsx", "docx": "docx",
+               "markdown (.md)": "md", "excel (.xlsx)": "xlsx", "word (.docx)": "docx"}
     fmt = fmt_map.get(fmt_raw, "md")
 
     default_dir = str(Path.home() / "Claude" / "SEO Reports")
-    output_dir = Path(
+    raw_dir = (
         args.get("output_dir", "").strip()
         or _audit_config.get("output_dir", "")
         or os.getenv("REPORT_OUTPUT_DIR", default_dir)
     )
+    output_dir = Path(raw_dir).expanduser()
     output_dir.mkdir(parents=True, exist_ok=True)
 
     domain = _audit_config.get("domain", "unknown").replace("https://", "").replace("http://", "").replace("/", "_")
