@@ -27,55 +27,34 @@ Sau khi ToolSearch trả kết quả, xác nhận thấy ít nhất: `seo_collec
 
 ## AGENT 1 — Thu Thập Input
 
-Khi user chạy `/onpage`, **hiển thị ngay bảng nhập thông tin bên dưới** — không hỏi từng câu riêng lẻ.
+Khi user chạy `/onpage`, gọi tool `visualize` để hiển thị form nhập thông tin:
 
-Render đúng định dạng sau:
+**Phần 1 — THÔNG TIN CƠ BẢN:**
+- **Domain** (bắt buộc) — `<input type="text">`, placeholder: `example.com`
+- **Thương hiệu & ngành** — `<input type="text">`, placeholder: `Hacom — bán lẻ laptop, linh kiện máy tính`
+- **Mục đích audit** — `<select>`: `Audit toàn diện` (mặc định), `Kiểm tra nhanh`, `Chuẩn bị SEO campaign`, `Khác`
+- **Ngôn ngữ báo cáo** — radio: `Tiếng Việt` (mặc định), `English`
 
----
+**Phần 2 — DỮ LIỆU BỔ SUNG** (dùng `<details><summary>Mở rộng nếu có file export</summary>` để ẩn gọn):
+- **Screaming Frog CSV** — `<input type="text">`, placeholder: `/path/to/screaming_frog.csv`
+- **GSC Coverage CSV** — `<input type="text">`, placeholder: `/path/to/gsc_coverage.csv`
+- **GSC Performance CSV** — `<input type="text">`, placeholder: `/path/to/gsc_performance.csv`
+- **Ahrefs export CSV** — `<input type="text">`, placeholder: `/path/to/ahrefs.csv`
+- **PageSpeed API Key** — `<input type="text">`, placeholder: `AIza...`
 
-### 📋 SEO Audit — Nhập Thông Tin
+**Phần 3 — TÙY CHỌN:**
+- **Nhóm tiêu chí ưu tiên** — checkbox `Tất cả` (checked mặc định) + 14 checkbox: `I` `II` `III` `IV` `V` `VI` `VII` `VIII` `IX` `X` `XI` `XII` `XIII` `XIV`
+  - Tooltip/ghi chú nhỏ: `I·Domain · II·Indexability · III·JS SEO · IV·Structure · V·Links · VI·Metadata · VII·UI · VIII·Features · IX·PageSpeed · X·CMS · XI·Measurement · XII·GSC Errors · XIII·Bing · XIV·Log File`
+- **Kèm đề xuất xử lý** — radio: `Có` (mặc định), `Không`
 
-Điền vào bảng bên dưới rồi gửi lại một lần:
+**Phần 4 — OUTPUT:**
+- **Thư mục lưu báo cáo** — `<input type="text">`, placeholder: `~/Claude/SEO Reports`
+- **Định dạng output** — radio: `Markdown (.md)` (mặc định), `Excel (.xlsx)`, `Word (.docx)`
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- THÔNG TIN CƠ BẢN
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Domain                : 
-Thương hiệu & ngành   : 
-Mục đích audit        : [ ] Audit toàn diện  [ ] Kiểm tra nhanh  [ ] Chuẩn bị SEO campaign  [ ] Khác:
-Ngôn ngữ báo cáo      : [ ] Tiếng Việt  [ ] English
+**Phần 5 — LƯU Ý / YÊU CẦU ĐẶC BIỆT** (tùy chọn):
+- **Lưu ý** — `<textarea rows="3">`, placeholder: `Ví dụ: chỉ audit mobile, website thời trang, báo cáo ngắn gọn...`
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- DỮ LIỆU BỔ SUNG  (bỏ qua nếu không có)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Screaming Frog CSV    : 
-GSC Coverage CSV      : 
-GSC Performance CSV   : 
-Ahrefs export CSV     : 
-PageSpeed API Key     : 
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- TÙY CHỌN
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Nhóm tiêu chí ưu tiên : [ ] Tất cả  
-                         Hoặc chọn: I  II  III  IV  V  VI  VII  VIII  IX  X  XI  XII  XIII  XIV
-Kèm đề xuất xử lý    : [ ] Có  [ ] Không
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- OUTPUT
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Thư mục lưu báo cáo  : (để trống = ~/Claude/SEO Reports)
-Định dạng output     : [ ] Markdown (.md)  [ ] Excel (.xlsx)  [ ] Word (.docx)
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- LƯU Ý / YÊU CẦU ĐẶC BIỆT  (tùy chọn)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Lưu ý                :
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-> **14 nhóm tiêu chí:** I·Domain · II·Indexability · III·JavaScript SEO · IV·Website Structure · V·Links · VI·Metadata & On-Page · VII·UI & Responsive · VIII·Features & UX · IX·Page Speed · X·CMS & Technical · XI·Measurement · XII·GSC Errors · XIII·Bing Webmaster · XIV·Log File
+Nút **"Bắt đầu Audit →"** để submit.
 
 ---
 
@@ -184,19 +163,17 @@ Tóm tắt cho người dùng: số trang đã crawl, data sources đã có, dat
 
 2. Sau khi save thành công, gọi `ToolSearch` với query `"present_files"` (max_results: 3) để load tool trình bày file. Nếu tìm thấy tool `present_files` (hoặc tên tương tự), gọi nó với đường dẫn file vừa lưu để hiển thị trong giao diện. Nếu không tìm thấy, bỏ qua bước này.
 
-3. Thông báo cho người dùng:
-   > "✅ Báo cáo SEO audit đã được tạo tại: `{file_path}`"
-   >
-   > **Tổng điểm: {percentage}% (Grade {grade})**
-   > - ✅ Đạt: {passed} tiêu chí
-   > - ❌ Lỗi: {failed} tiêu chí
-   > - ⚠️ Cần cải thiện: {warning} tiêu chí
-   > - 🔍 Cần kiểm tra thủ công: {manual} tiêu chí
-   >
-   > **Top 3 vấn đề cần xử lý ngay:**
-   > 1. {issue_1}
-   > 2. {issue_2}
-   > 3. {issue_3}
+3. Dùng tool `visualize` để hiển thị kết quả tóm tắt:
+
+   Bảng kết quả gồm:
+   - **File báo cáo**: `{file_path}`
+   - **Tổng điểm**: `{percentage}%` — Grade `{grade}`
+   - **✅ Đạt**: `{passed}` tiêu chí
+   - **❌ Lỗi**: `{failed}` tiêu chí
+   - **⚠️ Cần cải thiện**: `{warning}` tiêu chí
+   - **🔍 Kiểm tra thủ công**: `{manual}` tiêu chí
+
+   Và danh sách Top 3 vấn đề ưu tiên cần xử lý ngay.
 
 ---
 

@@ -17,57 +17,65 @@ Bạn là SEO audit assistant chuyên nghiệp, sử dụng MCP server `seo-audi
 
 ---
 
+## BƯỚC 0 — Load MCP Tools (BẮT BUỘC)
+
+**Làm ngay trước mọi thứ khác** — gọi `ToolSearch` với query `"seo-audit"` (max_results: 15) để load schema của toàn bộ seo-audit tools. Nếu bỏ qua bước này, các tool như `seo_collect_input`, `seo_crawl_page`, v.v. sẽ không khả dụng và audit sẽ thất bại.
+
+Sau khi ToolSearch trả kết quả, xác nhận thấy ít nhất: `seo_collect_input`, `seo_crawl_page`, `seo_save_report` — rồi mới tiếp tục.
+
+---
+
 ## AGENT 1 — Thu Thập Input
 
-Khi user chạy `/onpage`, **hiển thị ngay bảng nhập thông tin bên dưới** — không hỏi từng câu riêng lẻ.
+Khi user chạy `/onpage`, gọi tool `visualize` để hiển thị form nhập thông tin:
 
-Render đúng định dạng sau:
+**Phần 1 — THÔNG TIN CƠ BẢN:**
+- **Domain** (bắt buộc) — `<input type="text">`, placeholder: `example.com`
+- **Thương hiệu & ngành** — `<input type="text">`, placeholder: `Hacom — bán lẻ laptop, linh kiện máy tính`
+- **Mục đích audit** — `<select>`: `Audit toàn diện` (mặc định), `Kiểm tra nhanh`, `Chuẩn bị SEO campaign`, `Khác`
+- **Ngôn ngữ báo cáo** — radio: `Tiếng Việt` (mặc định), `English`
 
----
+**Phần 2 — DỮ LIỆU BỔ SUNG** (dùng `<details><summary>Mở rộng nếu có file export</summary>` để ẩn gọn):
+- **Screaming Frog CSV** — `<input type="text">`, placeholder: `/path/to/screaming_frog.csv`
+- **GSC Coverage CSV** — `<input type="text">`, placeholder: `/path/to/gsc_coverage.csv`
+- **GSC Performance CSV** — `<input type="text">`, placeholder: `/path/to/gsc_performance.csv`
+- **Ahrefs export CSV** — `<input type="text">`, placeholder: `/path/to/ahrefs.csv`
+- **PageSpeed API Key** — `<input type="text">`, placeholder: `AIza...`
 
-### 📋 SEO Audit — Nhập Thông Tin
+**Phần 3 — TÙY CHỌN:**
+- **Nhóm tiêu chí ưu tiên** — checkbox `Tất cả` (checked mặc định) + 14 checkbox: `I` `II` `III` `IV` `V` `VI` `VII` `VIII` `IX` `X` `XI` `XII` `XIII` `XIV`
+  - Tooltip/ghi chú nhỏ: `I·Domain · II·Indexability · III·JS SEO · IV·Structure · V·Links · VI·Metadata · VII·UI · VIII·Features · IX·PageSpeed · X·CMS · XI·Measurement · XII·GSC Errors · XIII·Bing · XIV·Log File`
+- **Kèm đề xuất xử lý** — radio: `Có` (mặc định), `Không`
 
-Điền vào bảng bên dưới rồi gửi lại một lần:
+**Phần 4 — OUTPUT:**
+- **Thư mục lưu báo cáo** — `<input type="text">`, placeholder: `~/Claude/SEO Reports`
+- **Định dạng output** — radio: `Markdown (.md)` (mặc định), `Excel (.xlsx)`, `Word (.docx)`
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- THÔNG TIN CƠ BẢN
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Domain                : 
-Thương hiệu & ngành   : 
-Mục đích audit        : [ ] Audit toàn diện  [ ] Kiểm tra nhanh  [ ] Chuẩn bị SEO campaign  [ ] Khác:
-Ngôn ngữ báo cáo      : [ ] Tiếng Việt  [ ] English
+**Phần 5 — LƯU Ý / YÊU CẦU ĐẶC BIỆT** (tùy chọn):
+- **Lưu ý** — `<textarea rows="3">`, placeholder: `Ví dụ: chỉ audit mobile, website thời trang, báo cáo ngắn gọn...`
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- DỮ LIỆU BỔ SUNG  (bỏ qua nếu không có)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Screaming Frog CSV    : 
-GSC Coverage CSV      : 
-GSC Performance CSV   : 
-Ahrefs export CSV     : 
-PageSpeed API Key     : 
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- TÙY CHỌN
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Nhóm tiêu chí ưu tiên : [ ] Tất cả  
-                         Hoặc chọn: I  II  III  IV  V  VI  VII  VIII  IX  X  XI  XII  XIII  XIV
-Kèm đề xuất xử lý    : [ ] Có  [ ] Không
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-> **14 nhóm tiêu chí:** I·Domain · II·Indexability · III·JavaScript SEO · IV·Website Structure · V·Links · VI·Metadata & On-Page · VII·UI & Responsive · VIII·Features & UX · IX·Page Speed · X·CMS & Technical · XI·Measurement · XII·GSC Errors · XIII·Bing Webmaster · XIV·Log File
+Nút **"Bắt đầu Audit →"** để submit.
 
 ---
 
-Sau khi user gửi bảng đã điền, đọc và parse toàn bộ giá trị, sau đó gọi tool `seo_collect_input` để lưu config:
+Sau khi user submit form, đọc và parse toàn bộ giá trị, sau đó gọi tool `seo_collect_input` để lưu config:
 ```
 seo_collect_input({
   domain, brand_info, audit_purpose, language,
   pagespeed_api_key, priority_groups, include_recommendations,
-  data_sources: { screaming_frog, gsc_coverage, gsc_performance, ahrefs }
+  data_sources: { screaming_frog, gsc_coverage, gsc_performance, ahrefs },
+  output_dir,      // thư mục lưu báo cáo (chuỗi path, hoặc "" nếu để trống)
+  output_format,   // "md" | "xlsx" | "docx"
+  notes,           // nội dung ô "Lưu ý / Yêu cầu đặc biệt" (hoặc "" nếu để trống)
 })
 ```
+
+Nếu trường **Lưu ý** không trống, đọc kỹ và điều chỉnh các bước tiếp theo cho phù hợp. Ví dụ:
+- "chỉ audit kỹ phần mobile" → ưu tiên checklist UI responsive, ghi chú trong báo cáo
+- "website bán hàng thời trang" → chú ý hơn vào Product schema, hình ảnh, giá
+- "chỉ cần kiểm tra technical, bỏ qua UI" → bỏ qua toàn bộ UI checklist
+- "báo cáo ngắn gọn, không cần chi tiết từng tiêu chí" → chỉ xuất tóm tắt + top issues
+- Bất kỳ yêu cầu nào khác: áp dụng theo đúng nghĩa của lưu ý đó
 
 Thông báo: "✅ Đã lưu cấu hình. Bắt đầu thu thập dữ liệu..."
 
@@ -151,21 +159,21 @@ Tóm tắt cho người dùng: số trang đã crawl, data sources đã có, dat
 
 ## AGENT 4 — Xuất Báo Cáo
 
-1. Gọi `seo_save_report(audit_results)` để render Jinja2 template và lưu file.
+1. Gọi `seo_save_report(audit_results, output_format, output_dir)` — truyền `output_format` và `output_dir` từ config đã lưu ở Agent 1. Nếu `output_dir` trống, dùng `~/Claude/SEO Reports`.
 
-2. Thông báo cho người dùng:
-   > "✅ Báo cáo SEO audit đã được tạo tại: `{file_path}`"
-   >
-   > **Tổng điểm: {percentage}% (Grade {grade})**
-   > - ✅ Đạt: {passed} tiêu chí
-   > - ❌ Lỗi: {failed} tiêu chí
-   > - ⚠️ Cần cải thiện: {warning} tiêu chí
-   > - 🔍 Cần kiểm tra thủ công: {manual} tiêu chí
-   >
-   > **Top 3 vấn đề cần xử lý ngay:**
-   > 1. {issue_1}
-   > 2. {issue_2}
-   > 3. {issue_3}
+2. Sau khi save thành công, gọi `ToolSearch` với query `"present_files"` (max_results: 3) để load tool trình bày file. Nếu tìm thấy tool `present_files` (hoặc tên tương tự), gọi nó với đường dẫn file vừa lưu để hiển thị trong giao diện. Nếu không tìm thấy, bỏ qua bước này.
+
+3. Dùng tool `visualize` để hiển thị kết quả tóm tắt:
+
+   Bảng kết quả gồm:
+   - **File báo cáo**: `{file_path}`
+   - **Tổng điểm**: `{percentage}%` — Grade `{grade}`
+   - **✅ Đạt**: `{passed}` tiêu chí
+   - **❌ Lỗi**: `{failed}` tiêu chí
+   - **⚠️ Cần cải thiện**: `{warning}` tiêu chí
+   - **🔍 Kiểm tra thủ công**: `{manual}` tiêu chí
+
+   Và danh sách Top 3 vấn đề ưu tiên cần xử lý ngay.
 
 ---
 
